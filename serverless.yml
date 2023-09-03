@@ -1,0 +1,42 @@
+service: kezzle-faiss
+frameworkVersion: "3"
+
+plugins:
+    - serverless-python-requirements
+    - serverless-dotenv-plugin
+
+custom:
+    pythonRequirements:
+        dockerizePip: non-linux
+
+provider:
+    name: aws
+    runtime: python3.11
+    stage: dev
+    region: ap-northeast-2
+
+package:
+    exclude:
+        - node_modules/**
+        - venv/**
+        - .env
+        - package-lock.json
+        - package.json
+        - serverless-env.yml
+
+functions:
+    index-save:
+        handler: main.lambda_handler
+        events:
+            - schedule: rate(1 hour)
+        timeout: 60
+        memorySize: 1536
+        fileSystemConfig:
+            localMountPath: ${file(./serverless-env.yml):MOUNT_PATH}
+            arn: ${file(./serverless-env.yml):EFSARN}
+        vpc:
+            securityGroupIds:
+                - ${file(./serverless-env.yml):SGID}
+            subnetIds:
+                - ${file(./serverless-env.yml):SUBNETID1}
+                - ${file(./serverless-env.yml):SUBNETID2}
