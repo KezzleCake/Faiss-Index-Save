@@ -30,7 +30,7 @@ functions:
         events:
             - schedule: rate(1 hour)
         timeout: 60
-        memorySize: 1536
+        memorySize: 4096
         fileSystemConfig:
             localMountPath: ${file(./serverless-env.yml):MOUNT_PATH}
             arn: ${file(./serverless-env.yml):EFSARN}
